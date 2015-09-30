@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GPIO Sample</string>
+    <color name="White">#ffffff</color>
+	<color name="Black">#000000</color>
+	<color name="DarkGray">#474747</color>
+	<string name="PushText">User Button 1</string>
+	<string name="PushLedText">User LED 1</string>
+</resources>
