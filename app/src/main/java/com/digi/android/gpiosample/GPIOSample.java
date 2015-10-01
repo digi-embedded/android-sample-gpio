@@ -1,4 +1,4 @@
-package com.example.android.gpiosample;
+package com.digi.android.gpiosample;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,13 +21,12 @@ import android.widget.TextView;
 
 /**
  * Sample application that demonstrates the usage of the GPIO
- * API by monitoring the status of Board User LED 1 . LEDs can
+ * API by monitoring the status of Board User LED 1. LEDs can
  * be controlled by using application software buttons or Board
  * User Button 1.
  * 
  * LED is controlled in a push mode: when button is pressed, LED 
  * is on and when button is released, LED is off.
- *
  */
 public class GPIOSample extends Activity {
 	
@@ -293,7 +292,6 @@ public class GPIOSample extends Activity {
      * Background asynchronous task that takes care of listening for
      * interrupt events on the board push button (User Button 1) and 
      * perform required actions.
-     *
      */
     private class PushButtonTask extends AsyncTask<Void, Void, Void> {
     	

@@ -1,4 +1,4 @@
-package com.example.android.gpiosample;
+package com.digi.android.gpiosample;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +8,6 @@ import java.io.IOException;
 /**
  * Utility class used to determine development board
  * parameters.
- *
  */
 public class BoardUtils {
 	
@@ -84,8 +83,9 @@ public class BoardUtils {
 	
 	/**
 	 * Reads the the first line of the given file.
+	 *
 	 * <p>Attempts to read the first line of the given file returning it as
-	 * a String.
+	 * a String.</p>
 	 * 
 	 * @param file File to read first line from.
 	 * @throws IOException On error. Error may occur while trying to read File.
