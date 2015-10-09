@@ -10,10 +10,8 @@ Demo requirements
 To run this example you need:
 
 * One compatible device to host the application.
-* Network connection between the device and the host PC in order to transfer and
+* A USB connection between the device and the host PC in order to transfer and
   launch the application.
-* Establish remote target connection to your Digi hardware before running this 
-  application.
 * Use EXP_GPIO0 on the GPIO expansion connector J30 of the SBC to switch the 
   state of the GPIO button.
 
@@ -23,8 +21,7 @@ Demo setup
 Make sure the hardware is set up correctly:
 
 1. The device is powered on.
-2. The device is connected directly to the PC or to the Local Area Network (LAN)
-   by the Ethernet cable.
+2. The device is connected directly to the PC by the micro USB cable.
 
 Demo run
 --------
@@ -32,19 +29,24 @@ Demo run
 The example is already configured, so all you need to do is to build and 
 launch the project.
   
-The application displays a representation of **User LED1** and **User BUTTON1**
+The application displays a representation of **User LED0** and **User BUTTON0**
 of the development board.
 
 Click the application button or the physical button of the development board to
 turn on the application LED representation and the physical LED in the
 development board.
 
-Tested on
----------
+Compatible with
+---------------
 
-* ConnectCore Wi-i.MX51
-* ConnectCore Wi-i.MX53
-* ConnectCard for i.MX28
-* ConnectCore 6 Adapter Board
 * ConnectCore 6 SBC
 * ConnectCore 6 SBC v2
+
+License
+-------
+
+This software is open-source software. Copyright Digi International, 2014-2015.
+
+This Source Code Form is subject to the terms of the Mozilla Public License,
+v. 2.0. If a copy of the MPL was not distributed with this file, you can obtain
+one at http://mozilla.org/MPL/2.0/.

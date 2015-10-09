@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2014-2015 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
+
 package com.digi.android.gpiosample;
 
 import java.io.BufferedReader;
@@ -11,73 +23,18 @@ import java.io.IOException;
  */
 public class BoardUtils {
 	
-	// Constants
-	private final static String BOARD_VERSION_FILE_MX51 = "/sys/kernel/ccwmx51/bb_rev";
-	private final static String BOARD_VERSION_FILE_MX53 = "/sys/kernel/ccwmx53/bb_rev";
-	private final static String BOARD_VERSION_FILE_MX28 = "/sys/kernel/ccardimx28/mod_ver";
-	private final static String BOARD_VERSION_FILE_MX6ADPT = "/sys/kernel/ccimx6adpt/mod_ver";
+	// Constants.
 	private final static String BOARD_VERSION_FILE_MX6SBC = "/sys/kernel/ccimx6sbc/mod_ver";
 	private final static String BOARD_VERSION_FILE_CC6SBC = "/proc/device-tree/digi,hwid,hv";
-	private final static String EAK_REVISION = "1";
-	
-	/**
-	 * Checks whether the board where module is mounted is an EAK version
-	 * (1) or not.
-	 * 
-	 * @return True if the board is an EAK version, false otherwise.
-	 */
-	public static boolean isEAK() {
-		if (readFile(new File(BOARD_VERSION_FILE_MX53)) != null)
-			return false;  // This way null pointer exceptions are avoided in case it's a MX53 module.
-		if (readFile(new File(BOARD_VERSION_FILE_MX51)).equals(EAK_REVISION))
-			return true;
-		return false;
-	}
 
 	/**
-	 * Checks whether the module is a CCWi.i-MX53
-	 * 
-	 * @return True if the board is a MX53 board, false otherwise.
-	 */
-	public static boolean isMX53() {
-		if (readFile(new File(BOARD_VERSION_FILE_MX53)) != null)
-			return true;
-		return false;
-	}
-
-	
-	/**
-	 * Checks whether the module is a CCWi.i-MX28
-	 * 
-	 * @return True if the board is a MX28 board, false otherwise.
-	 */
-	public static boolean isMX28() {
-		if (readFile(new File(BOARD_VERSION_FILE_MX28)) != null)
-			return true;
-		return false;
-	}
-	
-	/**
-	 * Checks whether the module is a CC i-MX6 ADPT
-	 * 
-	 * @return True if the board is a MX6 board, false otherwise.
-	 */
-	public static boolean isMX6ADPT() {
-		if (readFile(new File(BOARD_VERSION_FILE_MX6ADPT)) != null)
-			return true;
-		return false;
-	}
-
-	/**
-	 * Checks whether the module is a CC i-MX6 SBC
+	 * Checks whether the module is a CC i-MX6 SBC.
 	 *
 	 * @return True if the board is a MX6 board, false otherwise.
 	 */
 	public static boolean isMX6SBC() {
-		if ((readFile(new File(BOARD_VERSION_FILE_MX6SBC)) != null) ||
-		    (readFile(new File(BOARD_VERSION_FILE_CC6SBC)) != null) )
-			return true;
-		return false;
+		return readFile(new File(BOARD_VERSION_FILE_MX6SBC)) != null ||
+			readFile(new File(BOARD_VERSION_FILE_CC6SBC)) != null;
 	}
 
 	
@@ -88,7 +45,6 @@ public class BoardUtils {
 	 * a String.</p>
 	 * 
 	 * @param file File to read first line from.
-	 * @throws IOException On error. Error may occur while trying to read File.
 	 */
 	private static String readFile(File file) {
 		if (!file.exists())
@@ -97,8 +53,8 @@ public class BoardUtils {
 		try {
 			reader = new BufferedReader(new FileReader(file), 8);
 			String value = reader.readLine();
-	        reader.close();
-	        return value.trim();
+			reader.close();
+			return value.trim();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
