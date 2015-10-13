@@ -100,11 +100,7 @@ public class GPIOSample extends Activity {
 			}
 		}
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -123,10 +119,6 @@ public class GPIOSample extends Activity {
 		initializeTask();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see android.app.Activity#onDestroy()
-	 */
 	@Override
 	protected void onDestroy() {
 		// Stop background task.
@@ -282,10 +274,6 @@ public class GPIOSample extends Activity {
 	 *
 	 */
 	private class PushButtonTask extends AsyncTask<Void, Void, Void> {
-		/*
-		 * (non-Javadoc)
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
 		@Override
 		protected Void doInBackground(Void... params) {
 			while (running) {
