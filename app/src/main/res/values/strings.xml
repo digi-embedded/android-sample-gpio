@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">GPIO Sample</string>
-	<color name="White">#ffffff</color>
-	<color name="Black">#000000</color>
-	<color name="DarkGray">#474747</color>
-	<string name="PushText">User Button 0</string>
-	<string name="PushLedText">User LED 0</string>
-	<string name="ModuleError">The module must be a CC i-MX6 SBC</string>
+    <string name="app_name">GPIO Sample</string>
+    <string name="PushText">User Button 0</string>
+    <string name="PushLedText">User LED 0</string>
+    <string name="ModuleError">The module must be a CC i-MX6 SBC</string>
+
+    <color name="White">#ffffff</color>
+    <color name="Black">#000000</color>
+    <color name="DarkGray">#474747</color>
 </resources>

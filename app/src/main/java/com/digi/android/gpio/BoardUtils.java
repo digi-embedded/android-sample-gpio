@@ -10,7 +10,7 @@
  * =======================================================================
  */
 
-package com.digi.android.gpiosample;
+package com.digi.android.gpio;
 
 import java.io.BufferedReader;
 import java.io.File;

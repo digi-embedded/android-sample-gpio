@@ -3,7 +3,7 @@ android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
     defaultConfig {
-        applicationId 'com.digi.android.gpiosample'
+        applicationId 'com.digi.android.gpio'
         minSdkVersion 19
         targetSdkVersion 19
     }

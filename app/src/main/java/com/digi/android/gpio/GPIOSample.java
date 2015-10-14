@@ -10,7 +10,7 @@
  * =======================================================================
  */
 
-package com.digi.android.gpiosample;
+package com.digi.android.gpio;
 
 import java.lang.ref.WeakReference;
 
