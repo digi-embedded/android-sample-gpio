@@ -199,21 +199,23 @@ public class GPIOSample extends Activity {
 	 */
 	private void performPushButtonGPIOAction(GPIOValue value) {
 		try {
-			// Change images.
-			if (value == GPIOValue.LOW) {
-				// Change GPIO LED value.
-				pushLedGPIO.setValue(GPIOValue.HIGH);
-				// Switch button image.
-				pushButton.setImageResource(R.drawable.button_pressed);
-				// Switch LED image.
-				pushLed.setImageResource(R.drawable.led_on);
-			} else {
-				// Change GPIO LED value.
-				pushLedGPIO.setValue(GPIOValue.LOW);
-				// Switch button image.
-				pushButton.setImageResource(R.drawable.button);
-				// Switch LED image.
-				pushLed.setImageResource(R.drawable.led);
+			switch (value) {
+				case LOW:
+					// Change GPIO LED value.
+					pushLedGPIO.setValue(GPIOValue.HIGH);
+					// Switch button image.
+					pushButton.setImageResource(R.drawable.button_pressed);
+					// Switch LED image.
+					pushLed.setImageResource(R.drawable.led_on);
+					break;
+				case HIGH:
+					// Change GPIO LED value.
+					pushLedGPIO.setValue(GPIOValue.LOW);
+					// Switch button image.
+					pushButton.setImageResource(R.drawable.button);
+					// Switch LED image.
+					pushLed.setImageResource(R.drawable.led);
+					break;
 			}
 		} catch (GPIOException e) {
 			e.printStackTrace();
