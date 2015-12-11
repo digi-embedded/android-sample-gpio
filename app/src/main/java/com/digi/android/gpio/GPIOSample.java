@@ -17,8 +17,11 @@ import java.lang.ref.WeakReference;
 import android.app.Activity;
 import android.gpio.GPIO;
 import android.gpio.GPIOException;
+import android.gpio.GPIOManager;
+import android.gpio.GPIOMode;
+import android.gpio.GPIOValue;
+import android.gpio.IGPIOListener;
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -54,7 +57,7 @@ public class GPIOSample extends Activity {
 	private final static int PUSH_BUTTON_RELEASED = 1;
 	private final static int PUSH_SOFT_BUTTON_PRESSED = 2;
 	private final static int PUSH_SOFT_BUTTON_RELEASED = 3;
-	
+
 	// Variables.
 	private GPIO pushLedGPIO;
 	private GPIO pushButtonGPIO;
@@ -62,10 +65,6 @@ public class GPIOSample extends Activity {
 	private ImageButton pushButton;
 
 	private ImageView pushLed;
-
-	private PushButtonTask pushButtonTask;
-	
-	private boolean running = false;
 
 	private IncomingHandler handler = new IncomingHandler(this);
 
@@ -76,7 +75,7 @@ public class GPIOSample extends Activity {
 		private final WeakReference<GPIOSample> wActivity;
 
 		IncomingHandler(GPIOSample activity) {
-			wActivity = new WeakReference<GPIOSample>(activity);
+			wActivity = new WeakReference<>(activity);
 		}
 
 		@Override
@@ -88,14 +87,12 @@ public class GPIOSample extends Activity {
 
 			switch (msg.what) {
 				case (PUSH_BUTTON_PRESSED):
-					gpioSample.performPushButtonGPIOAction(false);
-					break;
 				case (PUSH_SOFT_BUTTON_PRESSED):
-					gpioSample.performPushButtonGPIOAction(false);
+					gpioSample.performPushButtonGPIOAction(GPIOValue.LOW);
 					break;
 				case (PUSH_BUTTON_RELEASED):
 				case (PUSH_SOFT_BUTTON_RELEASED):
-					gpioSample.performPushButtonGPIOAction(true);
+					gpioSample.performPushButtonGPIOAction(GPIOValue.HIGH);
 					break;
 			}
 		}
@@ -115,14 +112,10 @@ public class GPIOSample extends Activity {
 		initializeGraphics();
 		// Initialize application GPIOs.
 		initializeGPIOs();
-		// Initialize application background task to check for interrupts on button GPIO.
-		initializeTask();
 	}
 
 	@Override
 	protected void onDestroy() {
-		// Stop background task.
-		stopTask();
 		try {
 			// Leave LED in a known state (off).
 			resetLedStatus();
@@ -165,13 +158,27 @@ public class GPIOSample extends Activity {
 	 * Initializes all the GPIOs that will be used in the application.
 	 */
 	private void initializeGPIOs() {
+		// Get the GPIO manager.
+		GPIOManager gpioManager = (GPIOManager) getSystemService(GPIO_SERVICE);
 		try {
-			pushButtonGPIO = new GPIO(GPIO_BUTTON, GPIO.MODE_INTERRUPT_EDGE_BOTH);
-			pushLedGPIO = new GPIO(GPIO_LED, GPIO.MODE_OUTPUT_HIGH);
+			pushButtonGPIO = gpioManager.createGPIO(GPIO_BUTTON, GPIOMode.INTERRUPT_EDGE_BOTH);
+			pushLedGPIO = gpioManager.createGPIO(GPIO_LED, GPIOMode.OUTPUT_HIGH);
 			// Initialize LEDs to a known status (off).
 			resetLedStatus();
-		} catch (GPIOException e1) {
-			e1.printStackTrace();
+			// Subscribe a listener to receive GPIO value changes.
+			pushButtonGPIO.subscribeListener(new IGPIOListener() {
+				@Override
+				public void valueChanged(GPIO gpio, GPIOValue gpioValue) {
+					if (gpio == pushButtonGPIO) {
+						if (gpioValue == GPIOValue.LOW)
+							handler.sendEmptyMessage(PUSH_SOFT_BUTTON_PRESSED);
+						else
+							handler.sendEmptyMessage(PUSH_SOFT_BUTTON_RELEASED);
+					}
+				}
+			});
+		} catch (GPIOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -182,63 +189,33 @@ public class GPIOSample extends Activity {
 	 */
 	private void resetLedStatus() throws GPIOException {
 		// GPIOs have output to low level, so true means led off.
-		pushLedGPIO.setState(false);
+		pushLedGPIO.setValue(GPIOValue.LOW);
 	}
 	
 	/**
-	 * Initializes background asynchronous task that take care of listening
-	 * for interrupt events on board button and perform required actions
-	 * on LED GPIO and graphics. 
-	 */
-	private void initializeTask() {
-		// Set global running variable to true.
-		running = true;
-		// Declare task.
-		pushButtonTask = new PushButtonTask();
-		// Start task.
-		pushButtonTask.execute();
-	}
-	
-	/**
-	 * Stop asynchronous background task that were taking care of 
-	 * checking GPIO button interrupt events.
-	 */
-	private void stopTask() {
-		// Set global running variable to false.
-		running = false;
-		// Stop waiting for interrupt on GPIO.
-		pushButtonGPIO.stopWaitingForInterrupt();
-		// Give time to propagate stop request.
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		// Cancel tasks.
-		pushButtonTask.cancel(true);
-		pushButtonTask = null;
-	}
-	
-	/**
-	 * Performs the Push LED action with the given new state.
+	 * Performs the Push LED action with the given new value.
 	 * 
-	 * @param state New state of the push LED.
+	 * @param value New value of the push LED.
 	 */
-	private void performPushButtonGPIOAction(boolean state) {
+	private void performPushButtonGPIOAction(GPIOValue value) {
 		try {
-			// Change GPIO LED state.
-			pushLedGPIO.setState(!state);
-			// Change images.
-			if (!state) {
-				// Switch button image.
-				pushButton.setImageResource(R.drawable.button_pressed);
-				// Switch LED image.
-				pushLed.setImageResource(R.drawable.led_on);
-			} else {
-				// Switch button image.
-				pushButton.setImageResource(R.drawable.button);
-				// Switch LED image.
-				pushLed.setImageResource(R.drawable.led);
+			switch (value) {
+				case LOW:
+					// Change GPIO LED value.
+					pushLedGPIO.setValue(GPIOValue.HIGH);
+					// Switch button image.
+					pushButton.setImageResource(R.drawable.button_pressed);
+					// Switch LED image.
+					pushLed.setImageResource(R.drawable.led_on);
+					break;
+				case HIGH:
+					// Change GPIO LED value.
+					pushLedGPIO.setValue(GPIOValue.LOW);
+					// Switch button image.
+					pushButton.setImageResource(R.drawable.button);
+					// Switch LED image.
+					pushLed.setImageResource(R.drawable.led);
+					break;
 			}
 		} catch (GPIOException e) {
 			e.printStackTrace();
@@ -266,31 +243,4 @@ public class GPIOSample extends Activity {
 			return true;
 		}
 	};
-	
-	/**
-	 * Background asynchronous task that takes care of listening for
-	 * interrupt events on the board push button (User Button 1) and 
-	 * perform required actions.
-	 *
-	 */
-	private class PushButtonTask extends AsyncTask<Void, Void, Void> {
-		@Override
-		protected Void doInBackground(Void... params) {
-			while (running) {
-				try {
-					boolean state = pushButtonGPIO.waitForInterrupt(0, 100);
-					if (running) {
-						// Send event to handler to perform required actions.
-						if (!state)
-							handler.sendEmptyMessage(PUSH_BUTTON_PRESSED);
-						else
-							handler.sendEmptyMessage(PUSH_BUTTON_RELEASED);
-					}
-				} catch (GPIOException e) {
-					e.printStackTrace();
-				}
-			}
-			return (null);
-		}
-	}
 }
