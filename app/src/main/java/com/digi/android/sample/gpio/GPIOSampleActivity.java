@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 Digi International Inc.,
+ * Copyright (c) 2014-2016 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -10,17 +10,11 @@
  * =======================================================================
  */
 
-package com.digi.android.gpio;
+package com.digi.android.sample.gpio;
 
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
-import android.gpio.GPIO;
-import android.gpio.GPIOException;
-import android.gpio.GPIOManager;
-import android.gpio.GPIOMode;
-import android.gpio.GPIOValue;
-import android.gpio.IGPIOListener;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +27,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.digi.android.gpio.GPIO;
+import com.digi.android.gpio.GPIOException;
+import com.digi.android.gpio.GPIOManager;
+import com.digi.android.gpio.GPIOMode;
+import com.digi.android.gpio.GPIOSample;
+import com.digi.android.gpio.GPIOValue;
+import com.digi.android.gpio.IGPIOListener;
+
 /**
  * GPIO sample application.
  *
@@ -44,7 +46,7 @@ import android.widget.Toast;
  * <p>For a complete description on the example, refer to the 'README.md' file
  * included in the example directory.</p>
  */
-public class GPIOSample extends Activity {
+public class GPIOSampleActivity extends Activity {
 	
 	// Constants.
 	
@@ -72,15 +74,15 @@ public class GPIOSample extends Activity {
 	 * Handler to manage UI calls from different threads.
 	 */
 	static class IncomingHandler extends Handler {
-		private final WeakReference<GPIOSample> wActivity;
+		private final WeakReference<GPIOSampleActivity> wActivity;
 
-		IncomingHandler(GPIOSample activity) {
+		IncomingHandler(GPIOSampleActivity activity) {
 			wActivity = new WeakReference<>(activity);
 		}
 
 		@Override
 		public void handleMessage(Message msg) {
-			GPIOSample gpioSample = wActivity.get();
+			GPIOSampleActivity gpioSample = wActivity.get();
 
 			if (gpioSample == null)
 				return;
@@ -159,18 +161,18 @@ public class GPIOSample extends Activity {
 	 */
 	private void initializeGPIOs() {
 		// Get the GPIO manager.
-		GPIOManager gpioManager = (GPIOManager) getSystemService(GPIO_SERVICE);
+		GPIOManager gpioManager = new GPIOManager(this);
 		try {
 			pushButtonGPIO = gpioManager.createGPIO(GPIO_BUTTON, GPIOMode.INTERRUPT_EDGE_BOTH);
 			pushLedGPIO = gpioManager.createGPIO(GPIO_LED, GPIOMode.OUTPUT_HIGH);
 			// Initialize LEDs to a known status (off).
 			resetLedStatus();
 			// Subscribe a listener to receive GPIO value changes.
-			pushButtonGPIO.subscribeListener(new IGPIOListener() {
+			pushButtonGPIO.registerListener(new IGPIOListener() {
 				@Override
-				public void valueChanged(GPIO gpio, GPIOValue gpioValue) {
-					if (gpio == pushButtonGPIO) {
-						if (gpioValue == GPIOValue.LOW)
+				public void valueChanged(GPIOSample sample) {
+					if (sample.getGPIO() == pushButtonGPIO) {
+						if (sample.getValue() == GPIOValue.LOW)
 							handler.sendEmptyMessage(PUSH_SOFT_BUTTON_PRESSED);
 						else
 							handler.sendEmptyMessage(PUSH_SOFT_BUTTON_RELEASED);
@@ -226,6 +228,7 @@ public class GPIOSample extends Activity {
 	 * Listener to wait for touch events to occur on both buttons.
 	 */
 	private OnTouchListener buttonTouchListener = new OnTouchListener() {
+		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			int action = event.getAction();
 			switch(v.getId()) {

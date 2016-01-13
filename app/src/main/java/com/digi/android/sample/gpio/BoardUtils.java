@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 Digi International Inc.,
+ * Copyright (c) 2014-2016 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -10,7 +10,7 @@
  * =======================================================================
  */
 
-package com.digi.android.gpio;
+package com.digi.android.sample.gpio;
 
 import java.io.BufferedReader;
 import java.io.File;
