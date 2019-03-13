@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016, Digi International Inc. <support@digi.com>
+ * Copyright (c) 2014-2019, Digi International Inc. <support@digi.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -55,8 +55,13 @@ public class GPIOSampleActivity extends Activity {
 	// Constants.
 	
 	// GPIO numbers for LEDs.
-	private final static int GPIO_BUTTON = 37;
-	private final static int GPIO_LED = 34;
+	private final static int GPIO_BUTTON_CC6SBC = 37;
+	private final static int GPIO_BUTTON_CC8XSBCPRO = 372;
+	private final static int GPIO_LED_CC6SBC = 34;
+	private final static int GPIO_LED_CC8XSBCPRO = 222;
+
+	private final static int GPIO_BUTTON = getButtonGPIO();
+	private final static int GPIO_LED = getLEDGPIO();
 
 	// Action enumeration.
 	private final static int PUSH_BUTTON_PRESSED = 0;
@@ -71,6 +76,7 @@ public class GPIOSampleActivity extends Activity {
 	private ImageButton pushButton;
 
 	private ImageView pushLed;
+	private ImageView boardImage;
 
 	private IncomingHandler handler = new IncomingHandler(this);
 
@@ -108,12 +114,13 @@ public class GPIOSampleActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		// Check if the module is a CC i-MX6 SBC.
-		if (!BoardUtils.isMX6SBC()) {
-			Toast.makeText(getApplicationContext(), getString(R.string.ModuleError),
+
+		if (GPIO_LED == -1 || GPIO_BUTTON == -1) {
+			Toast.makeText(getApplicationContext(), "ERROR: Unknown board type",
 					Toast.LENGTH_LONG).show();
 			finish();
 		}
+
 		// Initialize application graphics.
 		initializeGraphics();
 		// Initialize application GPIOs.
@@ -141,6 +148,7 @@ public class GPIOSampleActivity extends Activity {
 		// Declare views by retrieving them with the ID.
 		pushLed = (ImageView)findViewById(R.id.push_led);
 		pushButton = (ImageButton)findViewById(R.id.push_button);
+		boardImage = (ImageView)findViewById(R.id.board_image);
 		
 		// Check our screen size.
 		Display display = getWindowManager().getDefaultDisplay();
@@ -155,6 +163,9 @@ public class GPIOSampleActivity extends Activity {
 		
 		pushButton.setMaxHeight((int)((float)x/2.6));
 		pushButton.setMaxWidth(y/2);
+
+		// Set correct board image.
+		boardImage.setImageResource(getBoardImageResourceID());
 		
 		// Add touch listeners to button.
 		pushButton.setOnTouchListener(buttonTouchListener);
@@ -250,4 +261,48 @@ public class GPIOSampleActivity extends Activity {
 			return true;
 		}
 	};
+
+	/**
+	 * Returns the the resource ID of the board image to draw depending on the board the sample is
+	 * running on.
+	 *
+	 * @return The resource ID of the board image to draw depending on the board the sample is
+	 *         running on.
+	 */
+	private int getBoardImageResourceID() {
+		if (BoardUtils.isMX8XSBCPRO())
+			return R.drawable.ccimx8x_sbc_pro_board;
+		if (BoardUtils.isMX6SBC())
+			return R.drawable.ccimx6_sbc_board;
+		else
+			return R.drawable.digi_icon;
+	}
+
+	/**
+	 * Returns the GPIO LED number based on the board the sample is running on.
+	 *
+	 * @return The GPIO LED number based on the board the sample is running on.
+	 */
+	private static int getLEDGPIO() {
+		if (BoardUtils.isMX8XSBCPRO())
+			return GPIO_LED_CC8XSBCPRO;
+		if (BoardUtils.isMX6SBC())
+			return GPIO_LED_CC6SBC;
+		else
+			return -1;
+	}
+
+	/**
+	 * Returns the GPIO BUTTON number based on the board the sample is running on.
+	 *
+	 * @return The GPIO BUTTON number based on the board the sample is running on.
+	 */
+	private static int getButtonGPIO() {
+		if (BoardUtils.isMX8XSBCPRO())
+			return GPIO_BUTTON_CC8XSBCPRO;
+		if (BoardUtils.isMX6SBC())
+			return GPIO_BUTTON_CC6SBC;
+		else
+			return -1;
+	}
 }
