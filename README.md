@@ -12,8 +12,10 @@ To run this example you need:
 * One compatible device to host the application.
 * A USB connection between the device and the host PC in order to transfer and
   launch the application.
-* Use EXP_GPIO0 on the GPIO expansion connector J30 of the SBC to switch the 
-  state of the GPIO button.
+* For ConnectCore 6 SBC use EXP_GPIO0 on the GPIO expansion connector J30 of
+  the SBC to switch the state of the GPIO button.
+* For ConnectCore 8X SBC Pro use GPIO4_20 on the expansion connector J20 (pin
+  13) of the SBC to switch the state of the GPIO button.
 
 Demo setup
 ----------
