@@ -25,10 +25,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Display;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -52,7 +48,7 @@ import com.digi.android.gpio.IGPIOListener;
  * included in the example directory.</p>
  */
 public class GPIOSampleActivity extends Activity {
-	
+
 	// Constants.
 	private final static String CCIMX6SBC_NAME = "ccimx6sbc";
 	private final static String CCIMX8XSBCPRO_NAME = "ccimx8xsbcpro";
@@ -69,19 +65,18 @@ public class GPIOSampleActivity extends Activity {
 	// Action enumeration.
 	private final static int PUSH_BUTTON_PRESSED = 0;
 	private final static int PUSH_BUTTON_RELEASED = 1;
-	private final static int PUSH_SOFT_BUTTON_PRESSED = 2;
-	private final static int PUSH_SOFT_BUTTON_RELEASED = 3;
+	final static int PUSH_SOFT_BUTTON_PRESSED = 2;
+	final static int PUSH_SOFT_BUTTON_RELEASED = 3;
 
 	// Variables.
 	private GPIO pushLedGPIO;
 	private GPIO pushButtonGPIO;
 
-	private ImageButton pushButton;
+	private GPIOButton pushButton;
 
 	private ImageView pushLed;
-	private ImageView boardImage;
 
-	private IncomingHandler handler = new IncomingHandler(this);
+	private final IncomingHandler handler = new IncomingHandler(this);
 
 	/**
 	 * Handler to manage UI calls from different threads.
@@ -142,24 +137,24 @@ public class GPIOSampleActivity extends Activity {
 		pushLedGPIO = null;
 		super.onDestroy();
 	}
-	
+
 	/**
 	 * Initializes application graphics for the LED and Button images.
 	 * This method also adds touch listener to the button.
 	 */
 	private void initializeGraphics() {
 		// Declare views by retrieving them with the ID.
-		pushLed = (ImageView)findViewById(R.id.push_led);
-		pushButton = (ImageButton)findViewById(R.id.push_button);
-		boardImage = (ImageView)findViewById(R.id.board_image);
-		
+		pushLed = findViewById(R.id.push_led);
+		pushButton = findViewById(R.id.push_button);
+		ImageView boardImage = findViewById(R.id.board_image);
+
 		// Check our screen size.
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
 		int x = size.x;
 		int y = size.y;
-		
+
 		// Set maximum components size.
 		pushLed.setMaxHeight((int)((float)x/2.75));
 		pushLed.setMaxWidth(y/2);
@@ -169,11 +164,11 @@ public class GPIOSampleActivity extends Activity {
 
 		// Set correct board image.
 		boardImage.setImageResource(getBoardImageResourceID());
-		
+
 		// Add touch listeners to button.
-		pushButton.setOnTouchListener(buttonTouchListener);
+		pushButton.setHandler(handler);
 	}
-	
+
 	/**
 	 * Initializes all the GPIOs that will be used in the application.
 	 */
@@ -201,17 +196,17 @@ public class GPIOSampleActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sets the LED to a known status (off).
 	 * 
-	 * @throws GPIOException
+	 * @throws GPIOException If any error occurs while resetting the LED.
 	 */
 	private void resetLedStatus() throws GPIOException {
 		// GPIOs have output to low level, so true means led off.
 		pushLedGPIO.setValue(GPIOValue.LOW);
 	}
-	
+
 	/**
 	 * Performs the Push LED action with the given new value.
 	 * 
@@ -241,29 +236,6 @@ public class GPIOSampleActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Listener to wait for touch events to occur on both buttons.
-	 */
-	private OnTouchListener buttonTouchListener = new OnTouchListener() {
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			int action = event.getAction();
-			switch(v.getId()) {
-				// Check which view was touch.
-				case (R.id.push_button):
-					// Check which action was performed.
-					if (action == MotionEvent.ACTION_DOWN)
-						// Send event to handler to perform required actions.
-						handler.sendEmptyMessage(PUSH_SOFT_BUTTON_PRESSED);
-					else if (action == MotionEvent.ACTION_UP)
-						// Send event to handler to perform required actions.
-						handler.sendEmptyMessage(PUSH_SOFT_BUTTON_RELEASED);
-					break;
-			}
-			return true;
-		}
-	};
 
 	/**
 	 * Returns the the resource ID of the board image to draw depending on the board the sample is

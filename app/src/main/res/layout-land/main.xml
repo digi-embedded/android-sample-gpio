@@ -43,7 +43,7 @@
                 android:textSize="20sp" />
         </LinearLayout>
 
-        <ImageButton
+        <com.digi.android.sample.gpio.GPIOButton
             android:id="@+id/push_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
