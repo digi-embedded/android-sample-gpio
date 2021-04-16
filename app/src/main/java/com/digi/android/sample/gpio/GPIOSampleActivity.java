@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2014-2019, Digi International Inc. <support@digi.com>
+/*
+ * Copyright (c) 2014-2021, Digi International Inc. <support@digi.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 
 import android.app.Activity;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,7 +54,9 @@ import com.digi.android.gpio.IGPIOListener;
 public class GPIOSampleActivity extends Activity {
 	
 	// Constants.
-	
+	private final static String CCIMX6SBC_NAME = "ccimx6sbc";
+	private final static String CCIMX8XSBCPRO_NAME = "ccimx8xsbcpro";
+
 	// GPIO numbers for LEDs.
 	private final static int GPIO_BUTTON_CC6SBC = 37;
 	private final static int GPIO_BUTTON_CC8XSBCPRO = 372;
@@ -270,12 +273,12 @@ public class GPIOSampleActivity extends Activity {
 	 *         running on.
 	 */
 	private int getBoardImageResourceID() {
-		if (BoardUtils.isMX8XSBCPRO())
+		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return R.drawable.ccimx8x_sbc_pro_board;
-		if (BoardUtils.isMX6SBC())
+		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return R.drawable.ccimx6_sbc_board;
-		else
-			return R.drawable.digi_icon;
+
+		return R.drawable.digi_icon;
 	}
 
 	/**
@@ -284,12 +287,12 @@ public class GPIOSampleActivity extends Activity {
 	 * @return The GPIO LED number based on the board the sample is running on.
 	 */
 	private static int getLEDGPIO() {
-		if (BoardUtils.isMX8XSBCPRO())
+		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return GPIO_LED_CC8XSBCPRO;
-		if (BoardUtils.isMX6SBC())
+		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return GPIO_LED_CC6SBC;
-		else
-			return -1;
+
+		return -1;
 	}
 
 	/**
@@ -298,11 +301,11 @@ public class GPIOSampleActivity extends Activity {
 	 * @return The GPIO BUTTON number based on the board the sample is running on.
 	 */
 	private static int getButtonGPIO() {
-		if (BoardUtils.isMX8XSBCPRO())
+		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return GPIO_BUTTON_CC8XSBCPRO;
-		if (BoardUtils.isMX6SBC())
+		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return GPIO_BUTTON_CC6SBC;
-		else
-			return -1;
+
+		return -1;
 	}
 }
