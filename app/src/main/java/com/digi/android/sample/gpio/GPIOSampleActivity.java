@@ -59,9 +59,9 @@ public class GPIOSampleActivity extends Activity {
 
 	// GPIO numbers for LEDs.
 	private final static int GPIO_BUTTON_CC6SBC = 37;
-	private final static int GPIO_BUTTON_CC8XSBCPRO = 372;
+	private final static int GPIO_BUTTON_CC8XSBCPRO = 148;
 	private final static int GPIO_LED_CC6SBC = 34;
-	private final static int GPIO_LED_CC8XSBCPRO = 223;
+	private final static int GPIO_LED_CC8XSBCPRO = 479;
 
 	private final static int GPIO_BUTTON = getButtonGPIO();
 	private final static int GPIO_LED = getLEDGPIO();
