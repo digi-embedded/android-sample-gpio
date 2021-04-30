@@ -39,10 +39,9 @@ import com.digi.android.gpio.IGPIOListener;
 /**
  * GPIO sample application.
  *
- * <p>This example demonstrates the usage of the GPIO
- * API by monitoring the status of Board User LED 0. LEDs can
- * be controlled by using application software buttons or Board
- * User Button 0.</p>
+ * <p>This application demonstrates the usage of the GPIO API by monitoring
+ * the status of a board LED. You can control this LED with the application
+ * software buttons or with a board button.</p>
  *
  * <p>For a complete description on the example, refer to the 'README.md' file
  * included in the example directory.</p>
@@ -52,12 +51,15 @@ public class GPIOSampleActivity extends Activity {
 	// Constants.
 	private final static String CCIMX6SBC_NAME = "ccimx6sbc";
 	private final static String CCIMX8XSBCPRO_NAME = "ccimx8xsbcpro";
+	private final static String CCIMX8MMDVK_NAME = "ccimx8mmdvk";
 
 	// GPIO numbers for LEDs.
 	private final static int GPIO_BUTTON_CC6SBC = 37;
-	private final static int GPIO_BUTTON_CC8XSBCPRO = 148;
+	private final static int GPIO_BUTTON_CC8XSBCPRO = 148;  // GPIO4_20
+	private final static int GPIO_BUTTON_CC8MMDVK = 52;     // GPIO2_IO20
 	private final static int GPIO_LED_CC6SBC = 34;
-	private final static int GPIO_LED_CC8XSBCPRO = 479;
+	private final static int GPIO_LED_CC8XSBCPRO = 479;     // PTD5
+	private final static int GPIO_LED_CC8MMDVK = 51;        // GPIO2_IO19
 
 	private final static int GPIO_BUTTON = getButtonGPIO();
 	private final static int GPIO_LED = getLEDGPIO();
@@ -247,6 +249,8 @@ public class GPIOSampleActivity extends Activity {
 	private int getBoardImageResourceID() {
 		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return R.drawable.ccimx8x_sbc_pro_board;
+		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
+			return R.drawable.ccimx8x_sbc_pro_board;
 		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return R.drawable.ccimx6_sbc_board;
 
@@ -261,6 +265,8 @@ public class GPIOSampleActivity extends Activity {
 	private static int getLEDGPIO() {
 		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return GPIO_LED_CC8XSBCPRO;
+		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
+			return GPIO_LED_CC8MMDVK;
 		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return GPIO_LED_CC6SBC;
 
@@ -275,6 +281,8 @@ public class GPIOSampleActivity extends Activity {
 	private static int getButtonGPIO() {
 		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return GPIO_BUTTON_CC8XSBCPRO;
+		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
+			return GPIO_BUTTON_CC8MMDVK;
 		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return GPIO_BUTTON_CC6SBC;
 
