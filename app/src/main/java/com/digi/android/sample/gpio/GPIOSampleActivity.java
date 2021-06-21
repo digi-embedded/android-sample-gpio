@@ -250,7 +250,7 @@ public class GPIOSampleActivity extends Activity {
 		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
 			return R.drawable.ccimx8x_sbc_pro_board;
 		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
-			return R.drawable.ccimx8x_sbc_pro_board;
+			return R.drawable.ccimx8m_dvk_board;
 		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
 			return R.drawable.ccimx6_sbc_board;
 
