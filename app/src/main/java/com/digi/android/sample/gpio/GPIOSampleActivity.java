@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2021, Digi International Inc. <support@digi.com>
+ * Copyright (c) 2014-2025, Digi International Inc. <support@digi.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -23,18 +23,19 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.Display;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.digi.android.gpio.GPIO;
 import com.digi.android.gpio.GPIOException;
 import com.digi.android.gpio.GPIOManager;
 import com.digi.android.gpio.GPIOMode;
-import com.digi.android.gpio.GPIOSample;
 import com.digi.android.gpio.GPIOValue;
-import com.digi.android.gpio.IGPIOListener;
 
 /**
  * GPIO sample application.
@@ -52,6 +53,7 @@ public class GPIOSampleActivity extends Activity {
 	private final static String CCIMX6SBC_NAME = "ccimx6sbc";
 	private final static String CCIMX8XSBCPRO_NAME = "ccimx8xsbcpro";
 	private final static String CCIMX8MMDVK_NAME = "ccimx8mmdvk";
+
 
 	// GPIO numbers for LEDs.
 	private final static int GPIO_BUTTON_CC6SBC = 37;
@@ -87,11 +89,12 @@ public class GPIOSampleActivity extends Activity {
 		private final WeakReference<GPIOSampleActivity> wActivity;
 
 		IncomingHandler(GPIOSampleActivity activity) {
+			super(Looper.getMainLooper());
 			wActivity = new WeakReference<>(activity);
 		}
 
 		@Override
-		public void handleMessage(Message msg) {
+		public void handleMessage(@NonNull Message msg) {
 			GPIOSampleActivity gpioSample = wActivity.get();
 
 			if (gpioSample == null)
@@ -160,7 +163,7 @@ public class GPIOSampleActivity extends Activity {
 		// Set maximum components size.
 		pushLed.setMaxHeight((int)((float)x/2.75));
 		pushLed.setMaxWidth(y/2);
-		
+
 		pushButton.setMaxHeight((int)((float)x/2.6));
 		pushButton.setMaxWidth(y/2);
 
@@ -183,15 +186,12 @@ public class GPIOSampleActivity extends Activity {
 			// Initialize LEDs to a known status (off).
 			resetLedStatus();
 			// Subscribe a listener to receive GPIO value changes.
-			pushButtonGPIO.registerListener(new IGPIOListener() {
-				@Override
-				public void valueChanged(GPIOSample sample) {
-					if (sample.getGPIO() == pushButtonGPIO) {
-						if (sample.getValue() == GPIOValue.LOW)
-							handler.sendEmptyMessage(PUSH_SOFT_BUTTON_PRESSED);
-						else
-							handler.sendEmptyMessage(PUSH_SOFT_BUTTON_RELEASED);
-					}
+			pushButtonGPIO.registerListener(sample -> {
+				if (sample.getGPIO() == pushButtonGPIO) {
+					if (sample.getValue() == GPIOValue.LOW)
+						handler.sendEmptyMessage(PUSH_SOFT_BUTTON_PRESSED);
+					else
+						handler.sendEmptyMessage(PUSH_SOFT_BUTTON_RELEASED);
 				}
 			});
 		} catch (GPIOException e) {
@@ -201,7 +201,7 @@ public class GPIOSampleActivity extends Activity {
 
 	/**
 	 * Sets the LED to a known status (off).
-	 * 
+	 *
 	 * @throws GPIOException If any error occurs while resetting the LED.
 	 */
 	private void resetLedStatus() throws GPIOException {
@@ -211,7 +211,7 @@ public class GPIOSampleActivity extends Activity {
 
 	/**
 	 * Performs the Push LED action with the given new value.
-	 * 
+	 *
 	 * @param value New value of the push LED.
 	 */
 	private void performPushButtonGPIOAction(GPIOValue value) {
@@ -247,14 +247,16 @@ public class GPIOSampleActivity extends Activity {
 	 *         running on.
 	 */
 	private int getBoardImageResourceID() {
-		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
-			return R.drawable.ccimx8x_sbc_pro_board;
-		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
-			return R.drawable.ccimx8m_dvk_board;
-		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
-			return R.drawable.ccimx6_sbc_board;
-
-		return R.drawable.digi_icon;
+		switch (Build.DEVICE) {
+			case CCIMX8XSBCPRO_NAME:
+				return R.drawable.ccimx8x_sbc_pro_board;
+			case CCIMX8MMDVK_NAME:
+				return R.drawable.ccimx8m_dvk_board;
+			case CCIMX6SBC_NAME:
+				return R.drawable.ccimx6_sbc_board;
+			default:
+				return R.drawable.digi_icon;
+		}
 	}
 
 	/**
@@ -263,14 +265,16 @@ public class GPIOSampleActivity extends Activity {
 	 * @return The GPIO LED number based on the board the sample is running on.
 	 */
 	private static int getLEDGPIO() {
-		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
-			return GPIO_LED_CC8XSBCPRO;
-		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
-			return GPIO_LED_CC8MMDVK;
-		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
-			return GPIO_LED_CC6SBC;
-
-		return -1;
+		switch (Build.DEVICE) {
+			case CCIMX8XSBCPRO_NAME:
+				return GPIO_LED_CC8XSBCPRO;
+			case CCIMX8MMDVK_NAME:
+				return GPIO_LED_CC8MMDVK;
+			case CCIMX6SBC_NAME:
+				return GPIO_LED_CC6SBC;
+			default:
+				return -1;
+		}
 	}
 
 	/**
@@ -279,13 +283,15 @@ public class GPIOSampleActivity extends Activity {
 	 * @return The GPIO BUTTON number based on the board the sample is running on.
 	 */
 	private static int getButtonGPIO() {
-		if (Build.DEVICE.equals(CCIMX8XSBCPRO_NAME))
-			return GPIO_BUTTON_CC8XSBCPRO;
-		if (Build.DEVICE.equals(CCIMX8MMDVK_NAME))
-			return GPIO_BUTTON_CC8MMDVK;
-		if (Build.DEVICE.equals(CCIMX6SBC_NAME))
-			return GPIO_BUTTON_CC6SBC;
-
-		return -1;
+		switch (Build.DEVICE) {
+			case CCIMX8XSBCPRO_NAME:
+				return GPIO_BUTTON_CC8XSBCPRO;
+			case CCIMX8MMDVK_NAME:
+				return GPIO_BUTTON_CC8MMDVK;
+			case CCIMX6SBC_NAME:
+				return GPIO_BUTTON_CC6SBC;
+			default:
+				return -1;
+		}
 	}
 }
